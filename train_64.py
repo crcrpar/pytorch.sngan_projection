@@ -150,6 +150,8 @@ def get_args():
                         help='Number of classes in training data. No need to set. default: 0')
     parser.add_argument('--loss_type', type=str, default='hinge',
                         help='loss function name. hinge (default) or dcgan.')
+    parser.add_argument('--relativistic_loss', '-relloss', default=False, action='store_true',
+                        help='Apply relativistic loss or not. default: False')
     parser.add_argument('--calc_FID', default=False, action='store_true',
                         help='If calculate FID score, set this ``True``. default: False')
     # Log and Save interval configuration
@@ -179,6 +181,54 @@ def get_args():
                         help='Discriminator and optimizer checkpoint path. default: None')
     args = parser.parse_args()
     return args
+
+
+def sample_from_data(args, device, data_loader):
+    """Sample real images and labels from data_loader.
+
+    Args:
+        args (argparse object)
+        device (torch.device)
+        data_loader (DataLoader)
+
+    Returns:
+        real, y
+
+    """
+
+    real, y = next(data_loader)
+    real, y = real.to(device), y.to(device)
+    if not args.cGAN:
+        y = None
+    return real, y
+
+
+def sample_from_gen(args, device, num_classes, gen):
+    """Sample fake images and labels from generator.
+
+    Args:
+        args (argparse object)
+        device (torch.device)
+        num_classes (int): for pseudo_y
+        gen (nn.Module)
+
+    Returns:
+        fake, pseudo_y, z
+
+    """
+
+    z = utils.sample_z(
+        args.batch_size, args.gen_dim_z, device, args.gen_distribution
+    )
+    if args.cGAN:
+        pseudo_y = utils.sample_pseudo_labels(
+            num_classes, args.batch_size, device
+        )
+    else:
+        pseudo_y = None
+
+    fake = gen(z, pseudo_y)
+    return fake, pseudo_y, z
 
 
 def main():
@@ -247,8 +297,10 @@ def main():
     opt_gen = optim.Adam(gen.parameters(), args.lr, (args.beta1, args.beta2))
     opt_dis = optim.Adam(dis.parameters(), args.lr, (args.beta1, args.beta2))
 
-    gen_criterion = getattr(L, 'gen_{}'.format(args.loss_type))
-    dis_criterion = getattr(L, 'dis_{}'.format(args.loss_type))
+    # gen_criterion = getattr(L, 'gen_{}'.format(args.loss_type))
+    # dis_criterion = getattr(L, 'dis_{}'.format(args.loss_type))
+    gen_criterion = L.GenLoss(args.loss_type, args.relativistic_loss)
+    dis_criterion = L.DisLoss(args.loss_type, args.relativistic_loss)
     print(' Initialized models...\n')
 
     if args.args_path is not None:
@@ -269,42 +321,24 @@ def main():
         cumulative_loss_dis = .0
         for i in range(args.n_dis):
             if i == 0:
-                z = utils.sample_z(
-                    args.batch_size, args.gen_dim_z, device, args.gen_distribution
-                )
-                if args.cGAN:
-                    pseudo_y = utils.sample_pseudo_labels(
-                        num_classes, args.batch_size, device
-                    )
-                else:
-                    pseudo_y = None
-
-                fake = gen(z, pseudo_y)
+                fake, pseudo_y, _ = sample_from_gen(args, device, num_classes, gen)
                 dis_fake = dis(fake, pseudo_y)
-                loss_gen = gen_criterion(dis_fake)
+                if args.relativistic_loss:
+                    real, y = sample_from_data(args, device, train_loader)
+                    dis_real = dis(real, y)
+                else:
+                    dis_real = None
 
+                loss_gen = gen_criterion(dis_fake, dis_real)
                 gen.zero_grad()
                 loss_gen.backward()
                 opt_gen.step()
-
                 _l_g += loss_gen.item()
                 if n_iter % 10 == 0 and writer is not None:
                     writer.add_scalar('gen', _l_g, n_iter)
 
-            z = utils.sample_z(
-                args.batch_size, args.gen_dim_z, device, args.gen_distribution
-            )
-            if args.cGAN:
-                pseudo_y = utils.sample_pseudo_labels(
-                    num_classes, args.batch_size, device
-                )
-            else:
-                pseudo_y = None
-            fake = gen(z, pseudo_y)
-            real, y = next(train_loader)
-            real, y = real.to(device), y.to(device)
-            if not args.cGAN:
-                y = None
+            fake, pseudo_y, _ = sample_from_gen(args, device, num_classes, gen)
+            real, y = sample_from_data(args, device, train_loader)
 
             dis_fake, dis_real = dis(fake, pseudo_y), dis(real, y)
             loss_dis = dis_criterion(dis_fake, dis_real)

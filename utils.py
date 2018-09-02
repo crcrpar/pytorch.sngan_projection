@@ -60,8 +60,9 @@ def sample_z(batch_size, dim_z, device, distribution=None):
         device (torch.device)
         distribution (str, optional): default is normal
 
-    Return
+    Returns:
         torch.FloatTensor or torch.cuda.FloatTensor
+
     """
 
     if distribution is None:
@@ -79,6 +80,7 @@ def sample_pseudo_labels(num_classes, batch_size, device):
         num_classes (int): number of classes in the dataset.
         batch_size (int): size of mini-batch.
         device (torch.Device): For compatibility.
+
     Returns:
         ~torch.LongTensor or torch.cuda.LongTensor.
 

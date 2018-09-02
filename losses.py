@@ -40,8 +40,8 @@ class _Loss(object):
         self.is_relativistic = is_relativistic
 
     def _preprocess(self, dis_fake, dis_real):
-        C_xf_tilde = torch.mean(dis_fake, keepdim=True).expand_as(dis_fake)
-        C_xr_tilde = torch.mean(dis_real, keepdim=True).expand_as(dis_real)
+        C_xf_tilde = torch.mean(dis_fake, dim=0, keepdim=True).expand_as(dis_fake)
+        C_xr_tilde = torch.mean(dis_real, dim=0, keepdim=True).expand_as(dis_real)
         return dis_fake - C_xr_tilde, dis_real - C_xf_tilde
 
 
