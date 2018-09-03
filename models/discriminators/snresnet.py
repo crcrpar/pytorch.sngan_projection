@@ -91,10 +91,12 @@ class SNResNetConcatDiscriminator(nn.Module):
             h = getattr(self, 'block{}'.format(i))(h)
         if y is not None:
             emb = self.l_y(y)
-            h, w = h.size()[2:]
-            emb = F.expand(
-                emb.unsqueeze(-1).unsqueeze(-1), (emb.size(0), emb.size(1), h, w)
-            )
+            # h, w = h.size()[2:]
+            # emb = torch.expand(
+            #     emb.unsqueeze(-1).unsqueeze(-1),
+            #     (emb.size(0), emb.size(1), h, w)
+            # )
+            emb = emb.unsqueeze(-1).unsqueeze(-1).expand(emb.size(0), emb.size(1), h.size(2), h.size(3))
             h = torch.cat((h, emb), dim=1)
         for i in range(4, 7):
             h = getattr(self, 'block{}'.format(i))(h)
