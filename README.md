@@ -34,7 +34,6 @@ Default parameters are the same as the original Chainer implementation.
 To see all the available arguments, run `python train_64.py --help`.
 
 ## TODO
-- [ ] check relativistic loss
 - [ ] implement super-resolution (cGAN)
 
 # Acknowledgement
