@@ -1,6 +1,8 @@
-# SNGAN and cGAN with projection discriminator
-**This is unofficial PyTorch implementation of sngan_projection.**  
 The original is available at https://github.com/pfnet-research/sngan_projection.
+
+# SNGAN and cGAN with projection discriminator
+_**This is unofficial PyTorch implementation of sngan_projection.**_  
+_**This does not reproduce the experiments and results reported in the paper due to the lack of GPUs.**_
 
 ## Requirements
 - Python 3.6.4
