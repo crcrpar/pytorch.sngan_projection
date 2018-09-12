@@ -5,6 +5,7 @@ import datetime
 import json
 import os
 import shutil
+import subprocess
 
 import numpy as np
 import torch
@@ -79,6 +80,14 @@ def prepare_results_dir(args):
     args.train_image_root = train_image_root
     args.eval_image_root = eval_image_root
 
+    try:
+        commit_hash = subprocess.check_output('git rev-parse HEAD'.split(' '))
+    except Exception:
+        commit_hash = ''
+    else:
+        commit_hash = commit_hash.decode('utf-8').strip()
+    args.commit_hash = commit_hash
+
     if args.cGAN:
         if args.num_classes > args.n_eval_batches:
             args.n_eval_batches = args.num_classes
@@ -114,6 +123,9 @@ def get_args():
                         help='mini-batch size of evaluation data. default: None')
     parser.add_argument('--num_workers', type=int, default=8,
                         help='Number of workers for training data loader. default: 8')
+    # Common model setting
+    parser.add_argument('--use_reflection_pad', '-urp', default=False, action='store_true',
+                        help='If you use ReflectionPad2d, set this. default: False')
     # Generator configuration
     parser.add_argument('--gen_num_features', '-gnf', type=int, default=64,
                         help='Number of features of generator (a.k.a. nplanes or ngf). default: 64')
@@ -180,6 +192,11 @@ def get_args():
     parser.add_argument('--dis_ckpt_path', '-dcp', default=None,
                         help='Discriminator and optimizer checkpoint path. default: None')
     args = parser.parse_args()
+
+    if args.use_reflection_pad:
+        args.padding = 'reflection'
+    else:
+        args.padding = 'zero'
     return args
 
 
@@ -283,16 +300,22 @@ def main():
     # initialize models.
     _n_cls = num_classes if args.cGAN else 0
     gen = ResNetGenerator(
-        args.gen_num_features, args.gen_dim_z, args.gen_bottom_width,
-        activation=F.relu, num_classes=_n_cls, distribution=args.gen_distribution
+        args.gen_num_features, args.gen_dim_z, args.padding,
+        args.gen_bottom_width, activation=F.relu, num_classes=_n_cls,
+        distribution=args.gen_distribution
     ).to(device)
     if args.dis_arch_concat:
         dis = SNResNetConcatDiscriminator(
-            args.dis_num_features, _n_cls, F.relu, args.dis_emb).to(device)
+            args.dis_num_features, args.padding, _n_cls, F.relu, args.dis_emb
+        ).to(device)
     else:
         dis = SNResNetProjectionDiscriminator(
-            args.dis_num_features, _n_cls, F.relu).to(device)
-    inception_model = inception.InceptionV3().to(device) if args.calc_FID else None
+            args.dis_num_features, args.padding, _n_cls, F.relu
+        ).to(device)
+    if args.calc_FID:
+        inception_model = inception.InceptionV3().to(device)
+    else:
+        inception_model = None
 
     opt_gen = optim.Adam(gen.parameters(), args.lr, (args.beta1, args.beta2))
     opt_dis = optim.Adam(dis.parameters(), args.lr, (args.beta1, args.beta2))
