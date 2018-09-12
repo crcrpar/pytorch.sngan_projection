@@ -1,8 +1,20 @@
 The original is available at https://github.com/pfnet-research/sngan_projection.
 
-# SNGAN and cGAN with projection discriminator
+# SNGAN and cGANs with projection discriminator
 _**This is unofficial PyTorch implementation of sngan_projection.**_  
 _**This does not reproduce the experiments and results reported in the paper due to the lack of GPUs.**_
+
+## SNGAN
+> Spectral Normalization for Generative Adversarial Networks  
+> Takeru Miyato, Toshiki Kataoka, Masanori Koyama, Yuichi Yoshida  
+> OpenReview: https://openreview.net/forum?id=B1QRgziT-  
+> arXiv: https://arxiv.org/abs/1802.05957
+
+## cGAN with projection discriminator
+> cGANs with Projection Discriminator  
+> Takeru Miyato, Masanori Koyama  
+> OpenReview: https://openreview.net/forum?id=ByS1VpgRZ  
+> arXiv: https://arxiv.org/abs/1802.05637  
 
 ## Requirements
 - Python 3.6.4
