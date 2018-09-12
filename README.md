@@ -44,6 +44,7 @@ Default parameters are the same as the original Chainer implementation.
 - to run without `tensorboard`, please add `--no_tensorboard`.
 - to calculate FID, add `--calc_FID` (not tested)
 - to use make discriminator relativistic, add `--relativistic_loss` or `-relloss` (not tested)
+- to use `ReflectionPad2d` instead of zero-padding, use `--use_reflection_pad` or `-urp` (Edited 2018/09/12)
 
 To see all the available arguments, run `python train_64.py --help`.
 
