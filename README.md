@@ -10,7 +10,7 @@ _**This does not reproduce the experiments and results reported in the paper due
 > OpenReview: https://openreview.net/forum?id=B1QRgziT-  
 > arXiv: https://arxiv.org/abs/1802.05957
 
-## cGAN with projection discriminator
+## cGANs with projection discriminator
 > cGANs with Projection Discriminator  
 > Takeru Miyato, Masanori Koyama  
 > OpenReview: https://openreview.net/forum?id=ByS1VpgRZ  
