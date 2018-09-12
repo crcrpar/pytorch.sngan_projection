@@ -10,24 +10,20 @@ from models.discriminators.resblocks import OptimizedBlock
 
 class SNResNetProjectionDiscriminator(nn.Module):
 
-    def __init__(self, num_features=64, padding='zero', num_classes=0, activation=F.relu):
+    def __init__(self, num_features=64, num_classes=0, activation=F.relu):
         super(SNResNetProjectionDiscriminator, self).__init__()
         self.num_features = num_features
         self.num_classes = num_classes
         self.activation = activation
 
-        self.block1 = OptimizedBlock(3, num_features, padding=padding)
+        self.block1 = OptimizedBlock(3, num_features)
         self.block2 = Block(num_features, num_features * 2,
-                            padding=padding,
                             activation=activation, downsample=True)
         self.block3 = Block(num_features * 2, num_features * 4,
-                            padding=padding,
                             activation=activation, downsample=True)
         self.block4 = Block(num_features * 4, num_features * 8,
-                            padding=padding,
                             activation=activation, downsample=True)
         self.block5 = Block(num_features * 8, num_features * 16,
-                            padding=padding,
                             activation=activation, downsample=True)
         self.l6 = utils.spectral_norm(nn.Linear(num_features * 16, 1))
         if num_classes > 0:
@@ -60,28 +56,24 @@ class SNResNetProjectionDiscriminator(nn.Module):
 
 class SNResNetConcatDiscriminator(nn.Module):
 
-    def __init__(self, num_features=64, padding='zero', num_classes=0,
-                 activation=F.relu, dim_emb=128):
+    def __init__(self, num_features, num_classes, activation=F.relu,
+                 dim_emb=128):
         super(SNResNetConcatDiscriminator, self).__init__()
         self.num_features = num_features
         self.num_classes = num_classes
         self.dim_emb = dim_emb
         self.activation = activation
 
-        self.block1 = OptimizedBlock(3, num_features, padding=padding)
+        self.block1 = OptimizedBlock(3, num_features)
         self.block2 = Block(num_features, num_features * 2,
-                            padding=padding,
                             activation=activation, downsample=True)
         self.block3 = Block(num_features * 2, num_features * 4,
-                            padding=padding,
                             activation=activation, downsample=True)
         if num_classes > 0:
             self.l_y = utils.spectral_norm(nn.Embedding(num_classes, dim_emb))
         self.block4 = Block(num_features * 4 + dim_emb, num_features * 8,
-                            padding=padding,
                             activation=activation, downsample=True)
         self.block5 = Block(num_features * 8, num_features * 16,
-                            padding=padding,
                             activation=activation, downsample=True)
         self.l6 = utils.spectral_norm(nn.Linear(num_features * 16, 1))
 

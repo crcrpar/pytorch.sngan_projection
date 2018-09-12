@@ -14,25 +14,8 @@ def _upsample(x):
 
 class Block(nn.Module):
 
-    """Residual block of Generator.
-
-    Args:
-        in_ch (int): Number of channels of input.
-        out_ch (int): Number of channels of output.
-        h_ch (int, optional): Number of channels of hidden
-        ksize (int, optional): Kernel size. (Default: 3)
-        pad (int, optional): width of padding. (Default: 1)
-        padding (str, optional): Padding method. (Default: zero)
-        activation (callable, optional): Default: ReLU
-        upsample (bool, optional): Default: False
-        num_classes (int, optional):
-            Argument for categorical conditional batch normalization
-
-    """
-
     def __init__(self, in_ch, out_ch, h_ch=None, ksize=3, pad=1,
-                 padding='zero', activation=F.relu, upsample=False,
-                 num_classes=0):
+                 activation=F.relu, upsample=False, num_classes=0):
         super(Block, self).__init__()
 
         self.activation = activation
@@ -42,14 +25,9 @@ class Block(nn.Module):
             h_ch = out_ch
         self.num_classes = num_classes
 
-        if padding == 'reflection':
-            self.padding = nn.ReflectionPad2d(pad)
-        else:
-            self.padding = nn.ZeroPad2d(pad)
-
         # Register layrs
-        self.c1 = nn.Conv2d(in_ch, h_ch, ksize, 1, 0)
-        self.c2 = nn.Conv2d(h_ch, out_ch, ksize, 1, 0)
+        self.c1 = nn.Conv2d(in_ch, h_ch, ksize, 1, pad)
+        self.c2 = nn.Conv2d(h_ch, out_ch, ksize, 1, pad)
         if self.num_classes > 0:
             self.b1 = CategoricalConditionalBatchNorm2d(
                 num_classes, in_ch)
@@ -59,7 +37,7 @@ class Block(nn.Module):
             self.b1 = nn.BatchNorm2d(in_ch)
             self.b2 = nn.BatchNorm2d(h_ch)
         if self.learnable_sc:
-            self.c_sc = nn.Conv2d(in_ch, out_ch, 1, 1, 0)
+            self.c_sc = nn.Conv2d(in_ch, out_ch, 1)
 
     def _initialize(self):
         init.xavier_uniform_(self.c1.weight.tensor, gain=math.sqrt(2))
@@ -87,9 +65,9 @@ class Block(nn.Module):
         h = self.activation(h)
         if self.upsample:
             h = _upsample(h)
-        h = self.c1(self.padding(h))
+        h = self.c1(h)
         if y is not None:
             h = self.b2(h, y, **kwargs)
         else:
             h = self.b2(h)
-        return self.c2(self.padding(self.activation(h)))
+        return self.c2(self.activation(h))
