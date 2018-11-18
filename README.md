@@ -1,4 +1,4 @@
-The original is available at https://github.com/pfnet-research/sngan_projection.
+The original is available at https://github.com/pfnet-research/sngan_projection and some training results are #1 #3 #5 #7 #8 #9 #10 including failure cases.
 
 # SNGAN and cGANs with projection discriminator
 _**This is unofficial PyTorch implementation of sngan_projection.**_  
