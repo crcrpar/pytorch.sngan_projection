@@ -39,6 +39,8 @@ class ResNetGenerator(nn.Module):
     def _initialize(self):
         init.xavier_uniform_(self.l1.weight.tensor)
         init.xavier_uniform_(self.conv7.weight.tensor)
+        init.ones_(self.b6.weight.tensor)
+        init.zeros_(self.b6.bias.tensor)
 
     def forward(self, z, y=None, **kwargs):
         h = self.l1(z).view(z.size(0), -1, self.bottom_width, self.bottom_width)

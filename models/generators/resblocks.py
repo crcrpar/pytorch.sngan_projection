@@ -26,8 +26,10 @@ class Block(nn.Module):
         self.num_classes = num_classes
 
         # Register layrs
-        self.c1 = nn.Conv2d(in_ch, h_ch, ksize, 1, pad)
-        self.c2 = nn.Conv2d(h_ch, out_ch, ksize, 1, pad)
+        # self.c1 = nn.Conv2d(in_ch, h_ch, ksize, 1, pad)
+        # self.c2 = nn.Conv2d(h_ch, out_ch, ksize, 1, pad)
+        self.c1 = nn.Sequential(nn.ReflectionPad2d(1), nn.Conv2d(in_ch, h_ch, ksize, 1, 0))
+        self.c2 = nn.Sequential(nn.ReflectionPad2d(1), nn.Conv2d(h_ch, out_ch, ksize, 1, 0))
         if self.num_classes > 0:
             self.b1 = CategoricalConditionalBatchNorm2d(
                 num_classes, in_ch)
@@ -38,10 +40,15 @@ class Block(nn.Module):
             self.b2 = nn.BatchNorm2d(h_ch)
         if self.learnable_sc:
             self.c_sc = nn.Conv2d(in_ch, out_ch, 1)
+            # self.c_sc = nn.Sequential(nn.ReflectionPad2d(1), nn.Conv2d(in_ch, out_ch, 1, 1, 0))
 
     def _initialize(self):
         init.xavier_uniform_(self.c1.weight.tensor, gain=math.sqrt(2))
         init.xavier_uniform_(self.c2.weight.tensor, gain=math.sqrt(2))
+        init.ones_(self.b1.weight.tensor)
+        init.zeros_(self.b1.bias.tensor)
+        init.ones_(self.b2.weight.tensor)
+        init.zeros_(self.b2.bias.tensor)
         if self.learnable_sc:
             init.xavier_uniform_(self.c_sc.weight.tensor, gain=1)
 

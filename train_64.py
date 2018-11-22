@@ -142,8 +142,8 @@ def get_args():
     # Training setting
     parser.add_argument('--seed', type=int, default=46,
                         help='Random seed. default: 46 (derived from Nogizaka46)')
-    parser.add_argument('--max_iteration', '-N', type=int, default=100000,
-                        help='Max iteration number of training. default: 100000')
+    parser.add_argument('--max_iteration', '-N', type=int, default=20000,
+                        help='Max iteration number of training. default: 20000')
     parser.add_argument('--n_dis', type=int, default=5,
                         help='Number of discriminator updater per generator updater. default: 5')
     parser.add_argument('--num_classes', '-nc', type=int, default=0,

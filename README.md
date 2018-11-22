@@ -4,6 +4,8 @@ The original is available at https://github.com/pfnet-research/sngan_projection.
 _**This is unofficial PyTorch implementation of sngan_projection.**_  
 _**This does not reproduce the experiments and results reported in the paper due to the lack of GPUs.**_
 
+**EDIT** (2018/10/21): Trying to implement "Discriminator Rejection Sampling"
+
 ## SNGAN
 > Spectral Normalization for Generative Adversarial Networks  
 > Takeru Miyato, Toshiki Kataoka, Masanori Koyama, Yuichi Yoshida  
@@ -16,7 +18,14 @@ _**This does not reproduce the experiments and results reported in the paper due
 > OpenReview: https://openreview.net/forum?id=ByS1VpgRZ  
 > arXiv: https://arxiv.org/abs/1802.05637  
 
-## Requirements
+## Discriminator Rejection Sampling
+> Discriminator Rejection Sampling  
+> Samaneh Azadi, Catherine Olsson, Trevor Darrell, Ian Goodfellow, Augustus Odena  
+> arXiv: https://arxiv.org/abs/1810.06758  
+
+This requires a trained model.
+
+# Requirements
 - Python 3.6.4
 - PyTorch 0.4.1
 - torchvision 0.2.1
@@ -29,14 +38,16 @@ _**This does not reproduce the experiments and results reported in the paper due
 If you want to use **tensorboard** for beautiful training update visualization, please install tensorflow and tensorboardX.  
 When using only tensorboard, tensorflow cpu is enough.
 
-## Dataset
+**EDIT** (2018/10/21): All installed packages in my virtualenv is dumped in `requirments.txt`.
+
+# Dataset
 - tiny ImageNet[^1].
 
 > Tiny Imagenet has 200 classes. Each class has 500 training images, 50 validation images, and 50 test images.
 
 [^1]: https://tiny-imagenet.herokuapp.com/
 
-## Training configuration
+# Training configuration
 Default parameters are the same as the original Chainer implementation.
 
 - to train cGAN with projection discriminator: run `train_64.py` with `--cGAN` option.
@@ -47,7 +58,7 @@ Default parameters are the same as the original Chainer implementation.
 
 To see all the available arguments, run `python train_64.py --help`.
 
-## TODO
+# TODO
 - [ ] implement super-resolution (cGAN)
 
 # Acknowledgement
