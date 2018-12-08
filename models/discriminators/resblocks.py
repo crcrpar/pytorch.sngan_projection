@@ -16,14 +16,16 @@ class Block(nn.Module):
         self.activation = activation
         self.downsample = downsample
 
-        self.learnable_sc = in_ch != out_ch or downsample
+        self.learnable_sc = (in_ch != out_ch) or downsample
         if h_ch is None:
+            h_ch = in_ch
+        else:
             h_ch = out_ch
 
         self.c1 = utils.spectral_norm(nn.Conv2d(in_ch, h_ch, ksize, 1, pad))
         self.c2 = utils.spectral_norm(nn.Conv2d(h_ch, out_ch, ksize, 1, pad))
         if self.learnable_sc:
-            self.c_sc = utils.spectral_norm(nn.Conv2d(in_ch, out_ch, ksize, 1, 0))
+            self.c_sc = utils.spectral_norm(nn.Conv2d(in_ch, out_ch, 1, 1, 0))
 
         self._initialize()
 
@@ -40,7 +42,7 @@ class Block(nn.Module):
         if self.learnable_sc:
             x = self.c_sc(x)
         if self.downsample:
-            return F.avg_pool2d(x, 2, padding=1)
+            return F.avg_pool2d(x, 2)
         return x
 
     def residual(self, x):
