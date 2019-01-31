@@ -1,0 +1,20 @@
+version: "2.3"
+
+services:
+  base: &default
+    image: pytorch.sngan_projection
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - user_id=1000
+        - group_id=1000
+        - user_name=crcrpar
+        - group_name=sngan_projection
+        - PYTHON_VERSION=3.7
+    volumes:
+      - "${DATA}:/data"
+      - "${RESULTS}:/result"
+    ports:
+      - ${PORT}:8888
+    ipc: host
