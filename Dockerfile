@@ -41,6 +41,9 @@ RUN conda install -y python=$PYTHON_VERSION && \
     conda install -y -c conda-forge jupyter_contrib_nbextensions && \
     jupyter contrib nbextension install --system
 RUN conda install -y pytorch torchvision -c pytorch
+RUN conda install -y -c conda-forge tensorflow && \
+    conda clean -y --all && \
+    pip install --no-cache-dir tensorboardX
 
 ENV PATH /opt/conda/bin:$PATH
 WORKDIR /src
