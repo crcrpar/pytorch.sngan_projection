@@ -66,7 +66,7 @@ def sample_z(batch_size, dim_z, device, distribution=None):
     """
 
     if distribution is None:
-        distribution == 'normal'
+        distribution = 'normal'
     if distribution == 'normal':
         return torch.empty(batch_size, dim_z, dtype=torch.float32, device=device).normal_()
     else:
