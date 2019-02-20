@@ -32,6 +32,8 @@ Some results are on issues with _results_ label.
 If you want to use **tensorboard** for beautiful training update visualization, please install tensorflow and tensorboardX.  
 When using only tensorboard, tensorflow cpu is enough.
 
+(EDIT 2019/02/20) Dockerfiles for pytorch 1.0 environment and tensorboard are added. PyTorch 1.0 Dockerfile requires an nvidia driver that supports CUDA 9.2.
+
 ## Dataset
 - tiny ImageNet[^1].
 
