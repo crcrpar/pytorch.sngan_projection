@@ -1,0 +1,34 @@
+version: "2.3"
+
+services:
+  base: &default
+    image: pytorch.sngan_projection
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - user_id=1000
+        - group_id=1000
+        - user_name=crcrpar
+        - group_name=sngan_projection
+        - PYTHON_VERSION=3.6
+    volumes:
+      - "${PWD}:/src"
+      - "${DATA}:/data"
+      - "${RESULTS}:/results"
+    ports:
+      - ${PORT}:8888
+    ipc: host
+  tensorboard:
+    build:
+      context: .
+      dockerfile: Dockerfile.tensorboard
+    volumes:
+      - "${RESULTS}:/logs"
+    working_dir: '/logs'
+    ports:
+      - "6006:6006"
+    environment:
+      reload_interval: 2
+      log_dir: /logs
+
