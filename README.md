@@ -1,5 +1,5 @@
 **UPDATE 2019/05/24: Current implementation of FID score is incorrect!**  
-Thank you @youngjung for the report ([issue#25](https://github.com/crcrpar/pytorch.sngan_projection/issues/25))!
+Thank you @youngjung for the report & fix suggestions ([issue#25](https://github.com/crcrpar/pytorch.sngan_projection/issues/25))!
 
 ---
 
