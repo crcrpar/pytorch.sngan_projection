@@ -18,19 +18,13 @@ RUN curl -o ~/miniconda.sh -O  https://repo.continuum.io/miniconda/Miniconda3-la
      rm ~/miniconda.sh && \
      /opt/conda/bin/conda install -y python=$PYTHON_VERSION numpy pyyaml scipy ipython mkl mkl-include ninja cython typing && \
      /opt/conda/bin/conda install -y -c pytorch magma-cuda101 && \
+     /opt/conda/bin/conda install -y -c pytorch pytorch torchvision && \
      /opt/conda/bin/conda install -y -c anaconda pytest && \
      /opt/conda/bin/conda clean -ya
 ENV PATH /opt/conda/bin:$PATH
-# This must be done before pip so that requirements.txt is available
-WORKDIR /opt/pytorch
-COPY . .
 
-RUN git submodule update --init --recursive
-RUN TORCH_CUDA_ARCH_LIST="3.5 5.2 6.0 6.1 7.0+PTX" TORCH_NVCC_FLAGS="-Xfatbin -compress-all" \
-    CMAKE_PREFIX_PATH="$(dirname $(which conda))/../" \
-    pip install -v .
-
-RUN if [ "$WITH_TORCHVISION" = "1" ] ; then git clone https://github.com/pytorch/vision.git && cd vision && pip install -v . ; else echo "building without torchvision" ; fi
+RUN /opt/conda/bin/conda install -y -c conda-forge tensorflow && \
+    /opt/conda/bin/conda clean -y --all
 
 WORKDIR /workspace
 RUN chmod -R a+w .
