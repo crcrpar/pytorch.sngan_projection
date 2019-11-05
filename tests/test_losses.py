@@ -4,7 +4,8 @@ import numpy as np
 import torch
 import torch.nn.functional as F
 
-import losses
+from losses import DisLoss
+from losses import GenLoss
 
 
 BATCH_SIZE = 10
@@ -20,27 +21,15 @@ def np_softplus(x):
 
 @pytest.mark.parametrize('loss_type', [('hinge'), ('dcgan'), ('sngan')])
 def test_construct_dis_loss(loss_type: str) -> None:
-    fail = False
-    try:
-        DisLoss(loss_type)
-    except Exception:
-        fail = True
-
     if loss_type == 'sngan':
-        assert fail
+        for klass in (DisLoss, GenLoss):
+            with pytest.raises(ValueError):
+                klass(loss_type)
     else:
-        assert (not fail)
-
-
-@pytest.mark.parametrize('loss_type', [('hinge'), ('dcgan'), ('sngan')])
-def test_construct_gen_loss(loss_type: str) -> None:
-    fail = False
-    try:
-        GenLoss(loss_type)
-    except Exception:
-        fail = True
-
-    if loss_type == 'sngan':
-        assert fail
-    else:
-        assert (not fail)
+        for klass in (DisLoss, GenLoss):
+            fail = False
+            try:
+                klass(loss_type)
+            except Exception:
+                fail = True
+            assert not fail
