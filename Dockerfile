@@ -24,6 +24,7 @@ RUN curl -o ~/miniconda.sh -O  https://repo.continuum.io/miniconda/Miniconda3-la
 ENV PATH /opt/conda/bin:$PATH
 
 RUN /opt/conda/bin/conda install -y -c conda-forge tensorflow && \
+    /opt/conda/bin/conda install -y -c conda-forge mypy && \
     /opt/conda/bin/conda clean -y --all
 
 WORKDIR /workspace
