@@ -26,12 +26,8 @@ jobs:
             which python
 
       # run tests!
-      # this example uses Django's built-in test-runner
-      # other common Python testing frameworks include pytest and nose
       # https://pytest.org
-      # https://nose.readthedocs.io
-      # - run:
-      #     name: run tests
-      #     command: |
-      #       . venv/bin/activate
-      #       python manage.py test
+      - run:
+          name: run tests with pytest
+          command: |
+            pytest tests
