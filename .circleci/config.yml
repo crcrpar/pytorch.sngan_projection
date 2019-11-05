@@ -4,7 +4,7 @@
 #
 version: 2
 jobs:
-  build:
+  tests-py37:
     docker:
       # specify the version you desire here
       # use `-browsers` prefix for selenium tests, e.g. `3.6.1-browsers`
@@ -20,14 +20,22 @@ jobs:
     steps:
       - checkout
 
-      - run:
-          name: check python environment
-          command: |
-            which python
-
       # run tests!
       # https://pytest.org
       - run:
           name: run tests with pytest
           command: |
             pytest tests
+  codecov:
+    docker:
+      - image: crcrpar/pytorch-sngan-projection:torch1.3
+
+    working_directory: ~/repo
+
+    steps:
+      - checkout
+
+      - run:
+          name: Codecov
+          command: |
+            pytest --cov=./

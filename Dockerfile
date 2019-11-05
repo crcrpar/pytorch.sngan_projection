@@ -27,5 +27,7 @@ RUN /opt/conda/bin/conda install -y -c conda-forge tensorflow && \
     /opt/conda/bin/conda install -y -c conda-forge mypy && \
     /opt/conda/bin/conda clean -y --all
 
+RUN pip install --no-cache-dir pytest-cov
+
 WORKDIR /workspace
 RUN chmod -R a+w .
