@@ -32,7 +32,7 @@ def test_construct_dis_loss(loss_type: str) -> None:
         assert (not fail)
 
 
-@pytest.mark.parametrize('loss_type', [('hinge', 'dcgan', 'sngan')])
+@pytest.mark.parametrize('loss_type', [('hinge'), ('dcgan'), ('sngan')])
 def test_construct_gen_loss(loss_type: str) -> None:
     fail = False
     try:
