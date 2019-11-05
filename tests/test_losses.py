@@ -18,7 +18,7 @@ def np_softplus(x):
     return np.log(1 + np.exp(x))
 
 
-@pytest.mark.parametrize('loss_type', [('hinge', 'dcgan', 'sngan')])
+@pytest.mark.parametrize('loss_type', [('hinge'), ('dcgan'), ('sngan')])
 def test_construct_dis_loss(loss_type: str) -> None:
     fail = False
     try:
